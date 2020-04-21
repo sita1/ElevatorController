@@ -73,6 +73,13 @@ public class LiftModel {
 	public void setCurrentCapacityAdded(Integer currentCapacityAdded) {
 		this.currentCapacityAdded = currentCapacityAdded;
 	}
+
+	@Override
+	public String toString() {
+		return "LiftModel [id=" + id + ", elevatorId=" + elevatorId + ", currentFloor=" + currentFloor
+				+ ", maxCapacity=" + maxCapacity + ", currentCapacityAdded=" + currentCapacityAdded + ", direction="
+				+ direction + ", floorsAdded=" + floorsAdded + "]";
+	}
 	
 	
 

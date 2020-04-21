@@ -15,7 +15,7 @@ public class LiftServiceImpl implements LiftService {
 	
 	Set<LiftModel> liftList = new HashSet<LiftModel>();
 
-	public LiftModel getLiftByElevatorIdAndDirection(Integer pressedFloor,  Integer elevatorId, String direction) {
+	public LiftModel getLiftByElevatorIdAndDirection(Integer pressedFloor,  Integer elevatorId, Direction direction) {
 		if(liftList.size()>0)
 		{
 		List<LiftModel> liftModelList = liftList.stream().filter(i-> i.getElevatorId().equals(elevatorId)).filter(i->i.getCurrentFloor()<pressedFloor).collect(Collectors.toList());
@@ -161,10 +161,40 @@ public class LiftServiceImpl implements LiftService {
 	}
 	
 	@Override
-	public LiftModel initializeLiftsWithElevators(List<Integer> elevatorIds) {
-		// TODO Auto-generated method stub
-		return null;
+	public Set<LiftModel> initializeLiftsWithElevators(Set<Integer> elevatorIds) {
+
+		
+		elevatorIds.forEach(id->
+				{
+		addLiftForElevator( id);
+		addLiftForElevator( id);
+		
+				}
+				);	
+			
+		return liftList;
 	}
+
+	private void addLiftForElevator(Integer id) {
+		LiftModel liftModel = new LiftModel();
+		if(liftList.size()>0)
+		{
+			Comparator<LiftModel> comparator = Comparator.comparing(LiftModel::getId);
+			LiftModel maxLiftId = liftList.stream().max(comparator).get();
+			liftModel.setId(maxLiftId.getId()+1);
+		}
+		else
+			liftModel.setId(1);
+		
+		liftModel.setCurrentCapacityAdded(0);
+		liftModel.setCurrentFloor(0);
+		liftModel.setDirection(Direction.NONE);
+		liftModel.setElevatorId(id);
+		liftModel.setMaxCapacity(10);
+		liftList.add(liftModel);
+	}
+
+
 
 
 }
