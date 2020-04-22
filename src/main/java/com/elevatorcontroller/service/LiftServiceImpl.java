@@ -5,7 +5,12 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Scanner;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 import com.elevatorcontroller.model.Direction;
@@ -15,13 +20,18 @@ public class LiftServiceImpl implements LiftService {
 	
 	Set<LiftModel> liftList = new HashSet<LiftModel>();
 
-	public LiftModel getLiftByElevatorIdAndDirection(Integer pressedFloor,  Integer elevatorId, Direction direction) {
+	public LiftModel getLiftByElevatorIdAndDirection(Integer pressedFromFloor,  Integer elevatorId, Direction direction) {
 		if(liftList.size()>0)
 		{
-		List<LiftModel> liftModelList = liftList.stream().filter(i-> i.getElevatorId().equals(elevatorId)).filter(i->i.getCurrentFloor()<pressedFloor).collect(Collectors.toList());
+		List<LiftModel> liftModelList = liftList.stream().filter(i-> i.getElevatorId().equals(elevatorId)).filter(i->i.getCurrentFloor()<pressedFromFloor).collect(Collectors.toList());
+		
+		if(liftModelList.stream().filter(i->i.getDirection().equals(Direction.NONE)).count()==2)
+		{
+			return liftModelList.get(0);
+		}
 		if(direction.equals(Direction.UP))
 		{
-		Long k = liftModelList.stream().filter(i->i.getDirection().equals(direction) && i.getCurrentFloor()<pressedFloor).count();
+		Long k = liftModelList.stream().filter(i->i.getDirection().equals(direction) && i.getCurrentFloor()<pressedFromFloor).count();
 		
 		if(k==liftModelList.size())
 		{
@@ -37,7 +47,7 @@ public class LiftServiceImpl implements LiftService {
 		}
 		else// for downward pressO
 		{
-			Long k = liftModelList.stream().filter(i->i.getDirection().equals(direction) && i.getCurrentFloor()>pressedFloor).count();
+			Long k = liftModelList.stream().filter(i->i.getDirection().equals(direction) && i.getCurrentFloor()>pressedFromFloor).count();
 			
 			if(k==liftModelList.size())
 			{
@@ -60,29 +70,80 @@ public class LiftServiceImpl implements LiftService {
 	}
 
 	@Override
-	public Boolean capacityCheckonWhenLiftStop(Integer personEntering, Integer elevatorId, Integer liftId) {
+	public Boolean capacityCheckonWhenLiftStop(Integer personEntering, Integer elevatorId, Integer liftId,Set<LiftModel> lifts) {
+		liftList.addAll(lifts);
 		
-	LiftModel liftModel = (LiftModel) liftList.stream().filter(i-> i.getId().equals(liftId)).collect(Collectors.toList());
-	if((liftModel.getCurrentCapacityAdded()+personEntering)<liftModel.getMaxCapacity())
-		return false;
+	List<LiftModel> liftModel =  liftList.stream().filter(i-> i.getId().equals(liftId)).collect(Collectors.toList());
+	System.out.println("hi"+liftModel.size());
+	
+	System.out.println("hiyyyy"+liftList.size());
+	
+	if(liftModel!=null && liftModel.size()>0)
+	{
+	liftModel.get(0).setCurrentCapacityAdded(liftModel.get(0).getCurrentCapacityAdded()+personEntering);
+	if((liftModel.get(0).getCurrentCapacityAdded())<liftModel.get(0).getMaxCapacity())
+		return true;;
 		
 		
+		 
 		
-		return true;
 	}
+	return false;
+	}
+	
 
 	@Override
-	public void pressFloor(Integer liftId, Integer pressedFloor) {
-		
+	public void pressFloor(Integer liftId, List<Integer> pressedFloors, Set<LiftModel> lifts) {
+		liftList.addAll(lifts);
 		LiftModel liftModel = (LiftModel) liftList.stream().filter(i-> i.getId().equals(liftId)).collect(Collectors.toList());
 		
 		List<Integer> floorsAdded = liftModel.getFloorsAdded();
 	
-		floorsAdded.add(pressedFloor);
+		floorsAdded.addAll(pressedFloors);
 		Collections.sort(floorsAdded);
 		liftModel.setFloorsAdded(floorsAdded);
 		liftList.add(liftModel);
 	}
+	
+	
+	public void inputEveryFiveSecond() {
+		Timer t = new Timer();
+		t.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				if(liftList!=null && liftList.size()>0)
+					
+				{
+					for(LiftModel liftModel : liftList)
+					{
+						if(liftModel.getDirection().equals(Direction.UP))
+								{
+							goUp(liftModel.getId());
+							try {
+								Thread.sleep(5000);
+							} catch (InterruptedException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+								}
+						else if(liftModel.getDirection().equals(Direction.DOWN))
+						{
+					goDown(liftModel.getId());
+					try {
+						Thread.sleep(5000);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+						}
+				
+						}
+				}
+			}
+		}, 0, 5000);
+
+	}
+
 
 
 	@Override
@@ -193,6 +254,21 @@ public class LiftServiceImpl implements LiftService {
 		liftModel.setMaxCapacity(10);
 		liftList.add(liftModel);
 	}
+
+	@Override
+	public void removePersonFromLift(Integer liftId, Integer personRemoved) {
+
+		LiftModel liftModel = (LiftModel) liftList.stream().filter(i -> i.getId().equals(liftId))
+				.collect(Collectors.toList());
+		if (personRemoved > 0) {
+			liftModel.setCurrentCapacityAdded(liftModel.getCurrentCapacityAdded() - personRemoved);
+
+			liftList.add(liftModel);
+		}
+
+	}
+	
+
 
 
 

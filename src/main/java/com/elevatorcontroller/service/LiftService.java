@@ -9,11 +9,9 @@ import com.elevatorcontroller.model.LiftModel;
 public interface LiftService {
 
 	// one elevator connected with 2 lift
-	LiftModel getLiftByElevatorIdAndDirection(Integer pressedFloor, Integer elevatorId, Direction direction);
+	LiftModel getLiftByElevatorIdAndDirection(Integer pressedFromFloor, Integer elevatorId, Direction direction);
 
-	Boolean capacityCheckonWhenLiftStop(Integer personEntering, Integer elevatorId, Integer liftId);
-
-	void pressFloor(Integer liftId, Integer pressedFloor);
+	Boolean capacityCheckonWhenLiftStop(Integer personEntering, Integer elevatorId, Integer liftId, Set<LiftModel> lifts);
 
 	void removeFloorFromLift(Integer liftId, Integer floorToRemove);
 
@@ -22,6 +20,10 @@ public interface LiftService {
 	Set<LiftModel> initializeLiftsWithElevators(Set<Integer> elevatorIds);
 
 	void goDown(Integer liftId);
+
+	void removePersonFromLift(Integer liftId, Integer personRemoved);
+
+	void pressFloor(Integer liftId, List<Integer> pressedFloor, Set<LiftModel> lifts);
 
 	
 

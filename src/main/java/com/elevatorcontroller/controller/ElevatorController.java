@@ -20,8 +20,8 @@ public class ElevatorController {
 	Set<Integer> elevatorIds = new HashSet<Integer>();
 	
 	
-	public LiftModel getLiftByElevatorIdAndDirection(Integer pressedFloor, Integer elevatorId,Direction up) {
-		LiftModel liftModel = liftService.getLiftByElevatorIdAndDirection(pressedFloor,elevatorId,up);
+	public LiftModel getLiftByElevatorIdAndDirection(Integer pressedFromFloor, Integer elevatorId,Direction up) {
+		LiftModel liftModel = liftService.getLiftByElevatorIdAndDirection(pressedFromFloor,elevatorId,up);
 		
 		return liftModel;
 		

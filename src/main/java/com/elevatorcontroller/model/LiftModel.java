@@ -1,5 +1,6 @@
 package com.elevatorcontroller.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class LiftModel {
@@ -16,7 +17,7 @@ public class LiftModel {
 	
 	private Direction direction;
 	
-	private List<Integer> floorsAdded;
+	private List<Integer> floorsAdded= new ArrayList<Integer>();;
 
 	public Integer getId() {
 		return id;

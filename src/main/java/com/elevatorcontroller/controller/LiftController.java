@@ -1,7 +1,11 @@
 package com.elevatorcontroller.controller;
 
+import java.util.List;
+import java.util.Set;
+
 import javax.inject.Inject;
 
+import com.elevatorcontroller.model.LiftModel;
 import com.elevatorcontroller.service.LiftService;
 
 public class LiftController {
@@ -9,9 +13,9 @@ public class LiftController {
 	@Inject
 	LiftService liftService;
 	
-	public String capacityCheckonWhenLiftStop(Integer personEntering,Integer elevatorId,Integer liftId)
+	public String capacityCheckonWhenLiftStop(Integer personEntering,Integer elevatorId,Integer liftId, Set<LiftModel> lifts)
 	{
-		Boolean message = liftService.capacityCheckonWhenLiftStop(personEntering,elevatorId,liftId);
+		Boolean message = liftService.capacityCheckonWhenLiftStop(personEntering,elevatorId,liftId,lifts);
 		
 		if(message==false)
 		return "overload";
@@ -19,9 +23,9 @@ public class LiftController {
 		return "ok";
 	}
 	
-	public void pressFloor(Integer liftId, Integer pressedFloor)
+	public void pressFloor(Integer liftId, List<Integer> pressedFloor,Set<LiftModel> lifts)
 	{
-		liftService.pressFloor(liftId,pressedFloor);
+		liftService.pressFloor(liftId,pressedFloor,lifts);
 	}
 	
 	public void removeFloorFromLift(Integer liftId, Integer floorToRemove)
@@ -37,5 +41,10 @@ public class LiftController {
 	public void goDown(Integer liftId)
 	{
 		liftService.goDown(liftId);
+	}
+	
+	public void removePersonFromLift(Integer liftId, Integer personRemoved)
+	{
+		liftService.removePersonFromLift(liftId,personRemoved);
 	}
 }

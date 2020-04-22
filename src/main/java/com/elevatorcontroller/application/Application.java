@@ -10,6 +10,6 @@ public class Application {
 	{
 		Injector injector = Guice.createInjector(new AppModule());
 	    StartElevator startElevator =injector.getInstance(StartElevator.class);
-	   // startElevator.processRequest();
+	    startElevator.startElevators();
 	}
 }
